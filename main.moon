@@ -12,11 +12,23 @@ moveBody = (dt) ->
       newX = love.graphics.getWidth! - hamster\getWidth!
     x = newX
   elseif direction == DIRECTION_ENUM.L then
-    x = x - (speed * dt)
+    newX = x - (speed * dt)
+    --HIT LEFT WALL!
+    if newX <= 0 then
+      newX = 0
+    x = newX
   if direction == DIRECTION_ENUM.D then
-    y = y + (speed * dt)
+    newY = y + (speed * dt)
+    --HIT DOWN WALL!
+    if newY + hamster\getHeight! >= love.graphics.getHeight! then
+      newY = love.graphics.getHeight! - hamster\getHeight!
+    y = newY    
   elseif direction == DIRECTION_ENUM.U then
-    y = y - (speed * dt)
+    newY = y - (speed * dt)
+    --HIT UP WALL!
+    if newY <= 0 then
+      newY = 0
+    y = newY    
 
 love.load = ->
   --todo: load game here
@@ -37,5 +49,5 @@ love.update = (dt) ->
 
 love.draw = ->  
   love.graphics.printf 'Hello World! \n#9668', 400, 300, 150, "center"
-  -- love.graphics.print hamster\getWidth!, 100,100
+  love.graphics.print y, 100,100
   love.graphics.draw(hamster, x, y)

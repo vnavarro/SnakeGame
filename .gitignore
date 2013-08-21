@@ -1,3 +1,4 @@
 .DS_store
 compiled
 *.love
+*.lua
