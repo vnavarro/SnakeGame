@@ -23,3 +23,8 @@ love.draw = ->
   love.graphics.printf 'Hello World! \n#9668', 400, 300, 150, "center"
   -- love.graphics.print y, 100,100
   snake\draw!
+
+love.keypressed = (key,u) ->
+   --Debug
+   if key == "lctrl" then --set to whatever key you want to use
+      debug.debug()
