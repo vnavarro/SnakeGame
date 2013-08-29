@@ -10,10 +10,10 @@ class Snake
     @step = 0
     @direction = DIRECTION_ENUM.R
     @image = love.graphics.newImage "resources/block.png"  
-    @size = 3
+    @size = 15
     @alive = true
     @createBody!    
-    @level = level
+    @level = level    
 
   createBody: =>
     @body = {}
@@ -48,6 +48,9 @@ class Snake
     if @collidedWithWall! then
       @alive = false
       return
+    if @collidedWithSelf headX,headY then
+      @alive = false
+      return
 
     if @level\collidedWithFood! then
       @level\pickFood!
@@ -71,7 +74,16 @@ class Snake
       return headY <= 0
     return false
 
+  collidedWithSelf: (newX,newY) =>
+    for i = 1, #@body
+      bodypart = @body[i]
+      -- print "NewPoint:#{newX},#{newY} | BodyPoint:#{bodypart.x},#{bodypart.y}"
+      if bodypart.x == newX and bodypart.y == newY then
+        return true
+    return false      
+
   draw: =>
+    love.graphics.setColor 255,255,255
     [part\draw! for i, part in ipairs @body]
 
   isGoingRight: =>
