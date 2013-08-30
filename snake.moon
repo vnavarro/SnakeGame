@@ -10,10 +10,16 @@ class Snake
     @step = 0
     @direction = DIRECTION_ENUM.R
     @image = love.graphics.newImage "resources/block.png"  
-    @size = 15
+    @size = 3
+    @bodyPartSize = 16
     @alive = true
     @createBody!    
     @level = level    
+    @soundLoad!
+
+  soundLoad: =>
+    die\stop!
+    die\rewind!    
 
   createBody: =>
     @body = {}
@@ -45,17 +51,19 @@ class Snake
     elseif @isGoingUp! then
       headY -= currentSpeed
 
-    if @collidedWithWall! then
+    if @collidedWithWall! or @collidedWithSelf headX,headY then
       @alive = false
-      return
-    if @collidedWithSelf headX,headY then
-      @alive = false
+      love.audio.play die
       return
 
     if @level\collidedWithFood! then
       @level\pickFood!
       @addBodyPart headX,headY            
+      love.audio.play foodPick
     else
+      if foodPick\isStopped() == false then
+        foodPick\stop!
+        foodPick\rewind!        
       tail = @body[1]    
       table.remove(@body,1)
       tail.x,tail.y = headX,headY
@@ -63,13 +71,13 @@ class Snake
 
   collidedWithWall: =>
     head = @body[#@body]
-    headX,headY = head.x*10,head.y*10
+    headX,headY = head.x*@bodyPartSize,head.y*@bodyPartSize
     if @isGoingRight! then
-      return headX > love.graphics.getWidth!
+      return headX > love.graphics.getWidth! - @bodyPartSize*2
     elseif @isGoingLeft! then
       return headX <= 0
     else if @isGoingDown! then
-      return headY > love.graphics.getHeight!
+      return headY > love.graphics.getHeight! - @bodyPartSize
     elseif @isGoingUp! then
       return headY <= 0
     return false
@@ -77,13 +85,12 @@ class Snake
   collidedWithSelf: (newX,newY) =>
     for i = 1, #@body
       bodypart = @body[i]
-      -- print "NewPoint:#{newX},#{newY} | BodyPoint:#{bodypart.x},#{bodypart.y}"
       if bodypart.x == newX and bodypart.y == newY then
         return true
     return false      
 
   draw: =>
-    love.graphics.setColor 255,255,255
+    love.graphics.setColor 0,0,0
     [part\draw! for i, part in ipairs @body]
 
   isGoingRight: =>
